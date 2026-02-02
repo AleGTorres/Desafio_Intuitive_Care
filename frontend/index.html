@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Intuitive Care - Dashboard ANS</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div id="app" class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-blue-800">Dashboard de Operadoras ANS</h1>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <div class="flex gap-4 mb-4">
+                <input v-model="busca" @keyup.enter="fetchOperadoras(1)" 
+                       placeholder="Buscar por Razão Social ou CNPJ..." 
+                       class="flex-1 border p-2 rounded">
+                <button @click="fetchOperadoras(1)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Pesquisar
+                </button>
+            </div>
+
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="p-3 border">Registro ANS</th>
+                        <th class="p-3 border">CNPJ</th>
+                        <th class="p-3 border">Razão Social</th>
+                        <th class="p-3 border">UF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="op in operadoras" :key="op.registro_ans" class="hover:bg-gray-50">
+                        <td class="p-3 border">{{ op.registro_ans }}</td>
+                        <td class="p-3 border">{{ op.cnpj }}</td>
+                        <td class="p-3 border">{{ op.razao_social }}</td>
+                        <td class="p-3 border text-center">{{ op.uf }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mt-4 flex justify-between items-center">
+                <span>Página {{ metadata.page }} de {{ Math.ceil(metadata.total / metadata.limit) }}</span>
+                <div class="flex gap-2">
+                    <button @click="fetchOperadoras(metadata.page - 1)" :disabled="metadata.page <= 1" 
+                            class="px-3 py-1 bg-gray-300 rounded disabled:opacity-50">Anterior</button>
+                    <button @click="fetchOperadoras(metadata.page + 1)" :disabled="metadata.page * metadata.limit >= metadata.total" 
+                            class="px-3 py-1 bg-gray-300 rounded disabled:opacity-50">Próximo</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Top 5 Operadoras por Despesa</h2>
+            <canvas id="graficoDespesas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    operadoras: [],
+                    busca: '',
+                    metadata: { page: 1, limit: 10, total: 0 },
+                    chart: null
+                }
+            },
+            methods: {
+                async fetchOperadoras(page) {
+                    const url = `http://127.0.0.1:8000/api/operadoras?page=${page}&limit=10&busca=${this.busca}`;
+                    const res = await fetch(url);
+                    const json = await res.json();
+                    this.operadoras = json.data;
+                    this.metadata = json.metadata;
+                },
+                async fetchEstatisticas() {
+                    const res = await fetch('http://127.0.0.1:8000/api/estatisticas');
+                    const json = await res.json();
+                    this.renderChart(json.top_5_operadoras);
+                },
+                renderChart(dados) {
+                    const ctx = document.getElementById('graficoDespesas');
+                    if(this.chart) this.chart.destroy();
+                    this.chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: dados.map(d => d.razao_social),
+                            datasets: [{
+                                label: 'Total de Despesas (R$)',
+                                data: dados.map(d => d.total_despesas),
+                                backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                            }]
+                        }
+                    });
+                }
+            },
+            mounted() {
+                this.fetchOperadoras(1);
+                this.fetchEstatisticas();
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
