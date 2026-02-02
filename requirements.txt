@@ -1,0 +1,9 @@
+requests
+pandas
+beautifulsoup4
+openpyxl
+sqlalchemy
+psycopg[binary]
+fastapi
+uvicorn
+pytest
