@@ -15,3 +15,7 @@ venv/
 
 .vscode/
 .idea/
+
+pip/
+
+postgres_data/

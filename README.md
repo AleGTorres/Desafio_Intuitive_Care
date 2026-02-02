@@ -9,6 +9,8 @@ Repositório destinado à resolução do teste para estágio da Intuitive Care.
 4. Instale as dependências: `pip install -r requirements.txt`.
 5. Execute a ingestão: `python scripts_etl/ingestion.py`.
 6. Execute a consolidação: `python scripts_etl/consolidation.py`.
+7. Execute a transformação: `python scripts_etl/transformation.py`.
+8. Execute a carga no banco: `python scripts_etl/load_to_db.py`.
 
 ## Decisões Técnicas e Trade-offs
 ### 1. Linguagem e Frameworks
@@ -41,3 +43,11 @@ Uso de Chunking (Pandas).
 ### 7. Agregação Estatística (Teste 2.3)
 - Cálculo de Média e Desvio Padrão trimestral por operadora e UF.
 - Escolhi o desvio padrão porque ele ajuda a mostrar o quanto as despesas médicas variam ao longo dos trimestres, trazendo uma visão mais clara do risco operacional.
+
+### 8. Modelagem e Persistência de Dados (Teste 3)
+- Estruturação de Schema (DDL): Criação explícita de tabelas com chaves primárias e tipos de dados rigorosos antes da ingestão.
+- Trade-off: Em vez de deixar o Pandas criar as tabelas automaticamente (o que geraria tipos genéricos), optei por definir o Schema via SQL para garantir a integridade referencial e performance em futuras consultas.
+- Conexão Resiliente: Implementação de lógica de "Auto-healing" no script de carga que utiliza o banco padrão postgres para verificar e criar o banco intuitive_care caso ele não exista.
+- Trade-off: Escolha do driver psycopg (v3) em conjunto com SQLAlchemy para operar em modo `AUTOCOMMIT` durante a criação do database. Utilizei essa abordagem para evitar erros de transações ativas do PostgreSQL e isolar o processo de carga de instabilidades do ambiente Docker no Windows.
+- Padronização de Encoding: Configuração do banco com `UTF8` e `locale C` no Docker Compose.
+- Justificativa: Essa decisão visa mitigar erros de decodificação de caracteres especiais comuns em sistemas Windows.

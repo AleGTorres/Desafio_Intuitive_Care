@@ -3,7 +3,7 @@ pandas
 beautifulsoup4
 openpyxl
 sqlalchemy
-psycopg2-binary
+psycopg[binary]
 fastapi
 uvicorn
 pytest

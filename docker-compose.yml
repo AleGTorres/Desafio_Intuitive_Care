@@ -6,9 +6,10 @@ services:
     container_name: intuitive_care_db
     restart: always
     environment:
-      POSTGRES_USER: user_admin
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password123
       POSTGRES_DB: intuitive_care
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     ports:
       - "5432:5432"
     volumes:
