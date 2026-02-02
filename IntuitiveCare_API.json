@@ -1,0 +1,76 @@
+{
+	"info": {
+		"name": "Intuitive Care - Desafio Estágio",
+		"description": "Coleção de rotas para o teste de API e Interface Web.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Listar Operadoras (Paginado)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/operadoras?page=1&limit=10",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "operadoras"],
+					"query": [
+						{ "key": "page", "value": "1", "description": "Número da página" },
+						{ "key": "limit", "value": "10", "description": "Quantidade de registros" }
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar Operadora por Nome ou CNPJ",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/operadoras?busca=BRADESCO",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "operadoras"],
+					"query": [
+						{ "key": "busca", "value": "BRADESCO", "description": "Termo de busca (Razão Social ou CNPJ)" }
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Detalhes da Operadora",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/operadoras/005711",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "operadoras", "005711"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Estatísticas Gerais",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/estatisticas",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "estatisticas"]
+				}
+			},
+			"response": []
+		}
+	]
+}
